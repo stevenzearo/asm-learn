@@ -1,0 +1,68 @@
+buildscript {
+    repositories {
+        gradlePluginPortal()
+    }
+    dependencies {
+        classpath 'gradle.plugin.com.github.spotbugs:spotbugs-gradle-plugin:2.0.0'
+    }
+}
+
+subprojects {
+    if (!plugins.hasPlugin(JavaPlugin)) return      // only apply to project has java plugin
+
+    apply plugin: 'checkstyle'
+    apply plugin: 'pmd'
+    apply plugin: com.github.spotbugs.SpotBugsPlugin
+    apply plugin: 'jacoco'
+
+    checkstyle {
+        dependencies {
+            checkstyle 'com.puppycrawl.tools:checkstyle:8.20'
+            checkstyle 'com.github.sevntu-checkstyle:sevntu-checks:1.35.0'
+        }
+
+        configFile = rootProject.file('gradle/check/checkstyle.xml')
+        configProperties['configDir'] = configFile.parentFile
+    }
+
+    pmd {
+        ruleSets = []
+        ruleSetFiles = rootProject.files('gradle/check/pmd.xml')
+        toolVersion = '6.17.0'
+        consoleOutput = true
+        incrementalAnalysis = true
+    }
+
+    spotbugs {
+        reportLevel = 'low'
+        includeFilter = rootProject.file('gradle/check/spotbugs.xml')
+        toolVersion = '3.1.12'
+    }
+
+    dependencies {
+        spotbugsPlugins 'com.mebigfatguy.sb-contrib:sb-contrib:7.4.6'
+    }
+
+    tasks.withType(com.github.spotbugs.SpotBugsTask).configureEach {
+        reports {
+            xml.enabled = false
+            html.enabled = true
+        }
+    }
+
+    jacoco {
+        toolVersion = '0.8.4'
+    }
+
+    tasks.named('jacocoTestReport').configure {
+        // to generate cross sub project report, run: gradlew test && gradlew jacocoTestReport
+        executionData.setFrom(fileTree(rootDir).include('build/**/jacoco/test.exec'))
+
+        reports {
+            xml.enabled = true
+            xml.destination rootProject.file("${buildDir}/reports/jacoco/report.xml")
+            html.enabled = true
+            csv.enabled = false
+        }
+    }
+}

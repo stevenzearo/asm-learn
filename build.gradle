@@ -1,0 +1,21 @@
+apply from: file("${rootDir}/gradle/project.gradle")
+
+subprojects {
+    group 'steve.asm'
+    version '1.0-SNAPSHOT'
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        testImplementation "junit:junit:4.2"
+        implementation "org.ow2.asm:asm-commons:7.2"
+    }
+}
+
+configure(project(':demo')) {
+    apply from: file("${rootDir}/gradle/app.gradle")
+    dependencies {
+        testImplementation "junit:junit:4.2"
+        implementation "org.ow2.asm:asm-commons:7.2"
+    }
+}
