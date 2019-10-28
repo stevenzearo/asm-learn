@@ -10,10 +10,19 @@ public class Person implements Serializable {
     public String name;
     public Integer age;
 
-    public void say() {}
+    public Person() {
+        super();
+    }
 
+    public void say() {
+        System.out.println("say method has been invoked......");
+    }
+/*
     static abstract class Child {
         String name;
+
+        public Child() {
+        }
 
         Child(String name) {
             this.name = name;
@@ -25,6 +34,6 @@ public class Person implements Serializable {
         public AChild(String name) {
             super(name);
         }
-    }
+    }*/
 
 }
