@@ -9,6 +9,8 @@ import org.objectweb.asm.Opcodes;
 import java.io.File;
 import java.io.FileInputStream;
 import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author steve
@@ -37,7 +39,7 @@ public class ASMDemo {
     }
 
     public static class MyClassVisitor extends ClassVisitor {
-        public MyClassVisitor(int api, ClassVisitor classVisitor) {
+        MyClassVisitor(int api, ClassVisitor classVisitor) {
             super(api, classVisitor);
         }
 
@@ -54,15 +56,15 @@ public class ASMDemo {
     }
 
     public static class MyClassLoader extends ClassLoader {
-        private byte[] data;
+        private Map<String, byte[]> classData = new HashMap<>();
 
         @Override
         protected Class<?> findClass(String name) throws ClassNotFoundException {
-            return initClass(name, data);
+            return initClass(name, classData.get(name));
         }
 
-        public Class<?> initClass(String name, byte[] data) {
-            this.data = data;
+        Class<?> initClass(String name, byte[] data) {
+            this.classData.put(name, data);
             return super.defineClass(name, data, 0, data.length);
         }
 
@@ -71,7 +73,7 @@ public class ASMDemo {
     public static class AddTaskMethodAdapter extends MethodVisitor {
 
 
-        public AddTaskMethodAdapter(int api, MethodVisitor methodVisitor) {
+        AddTaskMethodAdapter(int api, MethodVisitor methodVisitor) {
             super(api, methodVisitor);
         }
 
