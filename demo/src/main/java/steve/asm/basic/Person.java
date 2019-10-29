@@ -11,7 +11,6 @@ public class Person implements Serializable {
     public Integer age;
 
     public Person() {
-        super();
     }
 
     public void say() {

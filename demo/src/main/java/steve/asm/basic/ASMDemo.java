@@ -8,10 +8,7 @@ import org.objectweb.asm.Opcodes;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
-import java.util.Objects;
 
 /**
  * @author steve
@@ -31,10 +28,8 @@ public class ASMDemo {
         MyClassLoader classLoader = new MyClassLoader();
         Class<?> aClass = classLoader.initClass(Person.class.getName(), bytes);
         Object o = classLoader.loadClass(Person.class.getName()).getConstructor().newInstance();
-        System.out.println(aClass.getConstructors().length);
         Method say = aClass.getDeclaredMethod("say");
-        Object invoke = say.invoke(o);
-
+        say.invoke(o);
     }
 
     private static void aopMethod() {
@@ -48,7 +43,8 @@ public class ASMDemo {
 
         @Override
         public MethodVisitor visitMethod(int access, String name, String descriptor, String signature, String[] exceptions) {
-            return new AddTaskMethodAdapter(Opcodes.ASM7);
+            if ("say".equals(name)) aopMethod();
+            return new AddTaskMethodAdapter(Opcodes.ASM7, super.visitMethod(access, name, descriptor, signature, exceptions));
         }
 
         @Override
@@ -74,14 +70,17 @@ public class ASMDemo {
 
     public static class AddTaskMethodAdapter extends MethodVisitor {
 
-        AddTaskMethodAdapter(int api) {
-            super(api);
+
+        public AddTaskMethodAdapter(int api, MethodVisitor methodVisitor) {
+            super(api, methodVisitor);
         }
 
         @Override
         public void visitMethodInsn(int opcode, String owner, String name, String descriptor, boolean isInterface) {
-            if (opcode == Opcodes.INVOKEVIRTUAL && "say".equals(name))
-                aopMethod();
+            System.out.println(name + ": enter method inside......");
+            if (opcode == Opcodes.INVOKEVIRTUAL && "println".equals(name))
+                System.out.println("println method has been invoked......");
+            ;
             super.visitMethodInsn(opcode, owner, name, descriptor, isInterface);
         }
     }
