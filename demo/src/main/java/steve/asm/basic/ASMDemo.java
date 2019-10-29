@@ -51,6 +51,7 @@ public class ASMDemo {
 
         @Override
         public void visitEnd() {
+            System.out.println("visit method end......");
             super.visitEnd();
         }
     }
