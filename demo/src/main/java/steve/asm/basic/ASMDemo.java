@@ -3,14 +3,14 @@ package steve.asm.basic;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.Handle;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
+import steve.asm.classloader.MyClassLoader;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @author steve
@@ -54,21 +54,6 @@ public class ASMDemo {
             System.out.println("visit method end......");
             super.visitEnd();
         }
-    }
-
-    public static class MyClassLoader extends ClassLoader {
-        private Map<String, byte[]> classData = new HashMap<>();
-
-        @Override
-        protected Class<?> findClass(String name) throws ClassNotFoundException {
-            return initClass(name, classData.get(name));
-        }
-
-        Class<?> initClass(String name, byte[] data) {
-            this.classData.put(name, data);
-            return super.defineClass(name, data, 0, data.length);
-        }
-
     }
 
     public static class AddTaskMethodAdapter extends MethodVisitor {

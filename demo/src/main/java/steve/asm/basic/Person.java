@@ -5,7 +5,7 @@ import java.io.Serializable;
 /**
  * @author steve
  */
-public class Person implements Serializable {
+public class Person implements Serializable, People {
     public String email;
     public String name;
     public Integer age;
@@ -13,6 +13,7 @@ public class Person implements Serializable {
     public Person() {
     }
 
+    @Override
     public void say() {
         System.out.println("say method has been invoked......");
     }
